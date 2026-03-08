@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Beneficiaries from './pages/Beneficiaries';
+import AidRequests from './pages/AidRequests';
+import Deliveries from './pages/Deliveries';
 
 function App() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <h1>AidConnect</h1>
-                <p>
-                    Welcome to AidConnect: NGO Aid Distribution Coordination System
-                </p>
-            </header>
-        </div>
-    );
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const isLoggedIn = localStorage.getItem('token');
+  
+  if (!isLoggedIn) {
+    return <Login />;
+  }
+
+  // Function to navigate between pages
+  window.navigateTo = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Render current page
+  if (currentPage === 'beneficiaries') {
+    return <Beneficiaries />;
+  }
+  
+  if (currentPage === 'requests') {
+    return <AidRequests />;
+  }
+  
+  if (currentPage === 'deliveries') {
+    return <Deliveries />;
+  }
+
+  return <Dashboard />;
 }
 
 export default App;
