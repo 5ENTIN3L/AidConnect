@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function Beneficiaries() {
-  const [beneficiaries, setBeneficiaries] = useState([
+  const [beneficiaries] = useState([
     {
       id: 1,
       uniqueId: 'BEN-2024-001',

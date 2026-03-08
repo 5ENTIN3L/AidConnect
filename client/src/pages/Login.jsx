@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authAPI } from '../services/api';
+
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -174,9 +174,9 @@ function Login() {
                   />
                   <span className="ml-2 text-sm text-gray-600">Keep me signed in</span>
                 </label>
-                <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
+                <button type="button" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
                   Forgot password?
-                </a>
+                </button>
               </div>
 
               <button
@@ -201,9 +201,9 @@ function Login() {
             <div className="mt-8 pt-6 border-t border-gray-200">
               <p className="text-center text-sm text-gray-600">
                 Don't have an account?{' '}
-                <a href="#" className="font-semibold text-blue-600 hover:text-blue-700 transition">
+                <button type="button" className="font-semibold text-blue-600 hover:text-blue-700 transition">
                   Request Access
-                </a>
+                </button>
               </p>
             </div>
           </div>

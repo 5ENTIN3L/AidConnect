@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function Deliveries() {
-  const [deliveries, setDeliveries] = useState([
+  const [deliveries] = useState([
     {
       id: 1,
       deliveryId: 'DEL-2024-001',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function AidRequests() {
-  const [requests, setRequests] = useState([
+  const [requests] = useState([
     {
       id: 1,
       requestId: 'REQ-2024-001',
