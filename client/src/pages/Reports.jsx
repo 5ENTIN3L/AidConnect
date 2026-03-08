@@ -48,140 +48,85 @@ function Reports() {
 
   useEffect(() => {
     if (loading) return;
+
+    const buildCharts = () => {
+      // Aid Type Distribution
+      const aidTypes = {};
+      requests.forEach(r => { aidTypes[r.aidType] = (aidTypes[r.aidType] || 0) + 1; });
+      if (aidTypeChartRef.current) {
+        if (aidTypeChart.current) aidTypeChart.current.destroy();
+        aidTypeChart.current = new Chart(aidTypeChartRef.current, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(aidTypes),
+            datasets: [{ data: Object.values(aidTypes), backgroundColor: ['#3B82F6','#F59E0B','#10B981','#8B5CF6','#EF4444','#06B6D4'], borderWidth: 0 }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 13 } } } }, cutout: '65%' }
+        });
+      }
+
+      // Delivery Status
+      const statuses = { scheduled: 0, in_progress: 0, delivered: 0, failed: 0 };
+      deliveries.forEach(d => { if (statuses[d.status] !== undefined) statuses[d.status]++; });
+      if (deliveryStatusChartRef.current) {
+        if (deliveryStatusChart.current) deliveryStatusChart.current.destroy();
+        deliveryStatusChart.current = new Chart(deliveryStatusChartRef.current, {
+          type: 'bar',
+          data: {
+            labels: ['Scheduled', 'In Progress', 'Delivered', 'Failed'],
+            datasets: [{ label: 'Deliveries', data: Object.values(statuses), backgroundColor: ['#3B82F6','#F59E0B','#10B981','#EF4444'], borderRadius: 8, borderSkipped: false }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+        });
+      }
+
+      // Urgency Breakdown
+      const urgencies = { EMERGENCY: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+      requests.forEach(r => { if (urgencies[r.urgency] !== undefined) urgencies[r.urgency]++; });
+      if (urgencyChartRef.current) {
+        if (urgencyChart.current) urgencyChart.current.destroy();
+        urgencyChart.current = new Chart(urgencyChartRef.current, {
+          type: 'bar',
+          data: {
+            labels: ['Emergency', 'High', 'Medium', 'Low'],
+            datasets: [{ label: 'Requests', data: Object.values(urgencies), backgroundColor: ['#EF4444','#F97316','#EAB308','#22C55E'], borderRadius: 8, borderSkipped: false }]
+          },
+          options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } }, y: { grid: { display: false } } } }
+        });
+      }
+
+      // Monthly Registrations
+      const months = {};
+      beneficiaries.forEach(b => {
+        const month = new Date(b.$createdAt).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        months[month] = (months[month] || 0) + 1;
+      });
+      if (monthlyChartRef.current) {
+        if (monthlyChart.current) monthlyChart.current.destroy();
+        monthlyChart.current = new Chart(monthlyChartRef.current, {
+          type: 'line',
+          data: {
+            labels: Object.keys(months),
+            datasets: [{ label: 'Beneficiaries Registered', data: Object.values(months), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#3B82F6', pointRadius: 5 }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+        });
+      }
+    };
+
     buildCharts();
+
     return () => {
       [aidTypeChart, deliveryStatusChart, urgencyChart, monthlyChart].forEach(c => {
         if (c.current) { c.current.destroy(); c.current = null; }
       });
     };
-  }, [loading, requests, deliveries, beneficiaries, buildCharts]);
-
-  const buildCharts = () => {
-    // Aid Type Distribution
-    const aidTypes = {};
-    requests.forEach(r => { aidTypes[r.aidType] = (aidTypes[r.aidType] || 0) + 1; });
-    if (aidTypeChartRef.current) {
-      if (aidTypeChart.current) aidTypeChart.current.destroy();
-      aidTypeChart.current = new Chart(aidTypeChartRef.current, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(aidTypes),
-          datasets: [{
-            data: Object.values(aidTypes),
-            backgroundColor: ['#3B82F6','#F59E0B','#10B981','#8B5CF6','#EF4444','#06B6D4'],
-            borderWidth: 0,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'bottom', labels: { padding: 20, font: { size: 13 } } }
-          },
-          cutout: '65%',
-        }
-      });
-    }
-
-    // Delivery Status
-    const statuses = { scheduled: 0, in_progress: 0, delivered: 0, failed: 0 };
-    deliveries.forEach(d => { if (statuses[d.status] !== undefined) statuses[d.status]++; });
-    if (deliveryStatusChartRef.current) {
-      if (deliveryStatusChart.current) deliveryStatusChart.current.destroy();
-      deliveryStatusChart.current = new Chart(deliveryStatusChartRef.current, {
-        type: 'bar',
-        data: {
-          labels: ['Scheduled', 'In Progress', 'Delivered', 'Failed'],
-          datasets: [{
-            label: 'Deliveries',
-            data: Object.values(statuses),
-            backgroundColor: ['#3B82F6','#F59E0B','#10B981','#EF4444'],
-            borderRadius: 8,
-            borderSkipped: false,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    // Urgency Breakdown
-    const urgencies = { EMERGENCY: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
-    requests.forEach(r => { if (urgencies[r.urgency] !== undefined) urgencies[r.urgency]++; });
-    if (urgencyChartRef.current) {
-      if (urgencyChart.current) urgencyChart.current.destroy();
-      urgencyChart.current = new Chart(urgencyChartRef.current, {
-        type: 'bar',
-        data: {
-          labels: ['Emergency', 'High', 'Medium', 'Low'],
-          datasets: [{
-            label: 'Requests',
-            data: Object.values(urgencies),
-            backgroundColor: ['#EF4444','#F97316','#EAB308','#22C55E'],
-            borderRadius: 8,
-            borderSkipped: false,
-          }]
-        },
-        options: {
-          responsive: true,
-          indexAxis: 'y',
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } },
-            y: { grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    // Monthly Registrations
-    const months = {};
-    beneficiaries.forEach(b => {
-      const month = new Date(b.$createdAt).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-      months[month] = (months[month] || 0) + 1;
-    });
-    if (monthlyChartRef.current) {
-      if (monthlyChart.current) monthlyChart.current.destroy();
-      monthlyChart.current = new Chart(monthlyChartRef.current, {
-        type: 'line',
-        data: {
-          labels: Object.keys(months),
-          datasets: [{
-            label: 'Beneficiaries Registered',
-            data: Object.values(months),
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59,130,246,0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#3B82F6',
-            pointRadius: 5,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-    }
-  };
+  }, [loading, requests, deliveries, beneficiaries]);
 
   const exportCSV = () => {
     const rows = [
       ['Beneficiary Name', 'Aid Type', 'Urgency', 'Status', 'Priority Score', 'Date'],
-      ...requests.map(r => [
-        r.beneficiaryName, r.aidType, r.urgency, r.status, r.priorityScore,
-        new Date(r.$createdAt).toLocaleDateString()
-      ])
+      ...requests.map(r => [r.beneficiaryName, r.aidType, r.urgency, r.status, r.priorityScore, new Date(r.$createdAt).toLocaleDateString()])
     ];
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -194,8 +139,7 @@ function Reports() {
   };
 
   const completionRate = deliveries.length > 0
-    ? Math.round((deliveries.filter(d => d.status === 'delivered').length / deliveries.length) * 100)
-    : 0;
+    ? Math.round((deliveries.filter(d => d.status === 'delivered').length / deliveries.length) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -237,8 +181,7 @@ function Reports() {
             <h2 className="text-3xl font-bold text-slate-900 mb-2">Analytics & Reports</h2>
             <p className="text-gray-600">Visual insights into aid distribution across all NGOs</p>
           </div>
-          <button onClick={exportCSV}
-            className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition shadow-lg flex items-center gap-2">
+          <button onClick={exportCSV} className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition shadow-lg flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
@@ -246,7 +189,6 @@ function Reports() {
           </button>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 text-center">
             <div className="text-4xl font-bold text-blue-600 mb-1">{beneficiaries.length}</div>
@@ -277,17 +219,14 @@ function Reports() {
               <h3 className="text-lg font-bold text-slate-900 mb-6">Aid Type Distribution</h3>
               <canvas ref={aidTypeChartRef}></canvas>
             </div>
-
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
               <h3 className="text-lg font-bold text-slate-900 mb-6">Delivery Status Breakdown</h3>
               <canvas ref={deliveryStatusChartRef}></canvas>
             </div>
-
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
               <h3 className="text-lg font-bold text-slate-900 mb-6">Requests by Urgency Level</h3>
               <canvas ref={urgencyChartRef}></canvas>
             </div>
-
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
               <h3 className="text-lg font-bold text-slate-900 mb-6">Beneficiary Registrations Over Time</h3>
               <canvas ref={monthlyChartRef}></canvas>
