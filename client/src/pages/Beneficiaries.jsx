@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { appwriteService } from '../services/api';
+import NavBar from '../components/NavBar';
 
 function Beneficiaries() {
   const [beneficiaries, setBeneficiaries] = useState([]);
@@ -20,16 +21,7 @@ function Beneficiaries() {
     householdSize: '',
   });
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/';
-  };
-
-  const goToDashboard = () => {
-    if (window.navigateTo) window.navigateTo('dashboard');
-  };
 
   useEffect(() => {
     fetchBeneficiaries();
@@ -81,51 +73,30 @@ function Beneficiaries() {
 
   const filteredBeneficiaries = beneficiaries.filter((b) => {
     const matchesSearch = b.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          b.uniqueId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          b.location?.toLowerCase().includes(searchTerm.toLowerCase());
+      b.uniqueId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      b.location?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterVulnerability === 'ALL' || b.vulnerability === filterVulnerability;
     return matchesSearch && matchesFilter;
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={goToDashboard}>
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent">AidConnect</h1>
-            </div>
-            <div className="flex items-center gap-6">
-              <button onClick={goToDashboard} className="text-gray-600 hover:text-blue-600 font-medium transition">Dashboard</button>
-              <button className="text-blue-600 font-semibold">Beneficiaries</button>
-              <button onClick={() => window.navigateTo('requests')} className="text-gray-600 hover:text-blue-600 font-medium transition">Aid Requests</button>
-              <button onClick={() => window.navigateTo('deliveries')} className="text-gray-600 hover:text-blue-600 font-medium transition">Deliveries</button>
-              <button onClick={() => window.navigateTo('reports')} className="text-gray-600 hover:text-blue-600 font-medium transition">Reports</button>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900">{user.fullName}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user.role?.replace('_', ' ')}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                  {user.fullName?.charAt(0)}
-                </div>
-              </div>
-              <button onClick={handleLogout} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">Logout</button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">
+      {/* Ambient Animated Background */}
+      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 pointer-events-none">
+        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] animate-blob" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+      </div>
+      <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] pointer-events-none">
+        <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80b5ff] to-[#4ade80] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem] animate-blob animation-delay-2000" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+      </div>
+      <div className="absolute top-1/2 left-1/4 -z-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <NavBar activePage="beneficiaries" />
+
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Beneficiaries</h2>
-            <p className="text-gray-600">Manage and track all registered beneficiaries</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Beneficiaries</h2>
+            <p className="text-gray-600 dark:text-gray-300">Manage and track all registered beneficiaries</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
@@ -171,7 +142,7 @@ function Beneficiaries() {
         )}
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-slate-700 transition-colors mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -184,13 +155,13 @@ function Beneficiaries() {
                 placeholder="Search by name, ID, or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             </div>
             <select
               value={filterVulnerability}
               onChange={(e) => setFilterVulnerability(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             >
               <option value="ALL">All Vulnerability Levels</option>
               <option value="CRITICAL">Critical</option>
@@ -203,10 +174,10 @@ function Beneficiaries() {
 
         {/* Add Beneficiary Form */}
         {showAddForm && (
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-6">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-slate-700 transition-colors mb-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-slate-900">Add New Beneficiary</h3>
-              <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600 transition">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Add New Beneficiary</h3>
+              <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -214,39 +185,39 @@ function Beneficiaries() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Full Name *</label>
                 <input type="text" name="fullName" value={formData.fullName} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Enter full name" required />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">National ID *</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">National ID *</label>
                 <input type="text" name="uniqueId" value={formData.uniqueId} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Enter national ID" required />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location *</label>
                 <input type="text" name="location" value={formData.location} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Enter location" required />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
                 <input type="tel" name="phone" value={formData.phone} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="+254 712 345 678" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Household Size *</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Household Size *</label>
                 <input type="number" name="householdSize" value={formData.householdSize} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Number of people" required />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Vulnerability Level *</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Vulnerability Level *</label>
                 <select name="vulnerability" value={formData.vulnerability} onChange={handleFormChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" required>
                   <option value="">Select level</option>
                   <option value="CRITICAL">Critical</option>
                   <option value="HIGH">High</option>
@@ -269,7 +240,7 @@ function Beneficiaries() {
         )}
 
         {/* Beneficiaries Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
@@ -286,46 +257,45 @@ function Beneficiaries() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-slate-50 to-blue-50">
+                <thead className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-700">
                   <tr>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Beneficiary</th>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">ID</th>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Location</th>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Household</th>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Vulnerability</th>
-                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Registered</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">Beneficiary</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">ID</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">Location</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">Household</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">Vulnerability</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">Registered</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredBeneficiaries.map((b, index) => (
-                    <tr key={b.$id} className="border-t border-gray-100 hover:bg-blue-50/50 transition">
+                    <tr key={b.$id} className="border-t border-gray-100 dark:border-slate-700/50 hover:bg-blue-50/50 dark:hover:bg-slate-700/30 transition-colors">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className={`w-12 h-12 bg-gradient-to-br ${
-                            index % 4 === 0 ? 'from-purple-400 to-pink-400' :
+                          <div className={`w-12 h-12 bg-gradient-to-br ${index % 4 === 0 ? 'from-purple-400 to-pink-400' :
                             index % 4 === 1 ? 'from-blue-400 to-cyan-400' :
-                            index % 4 === 2 ? 'from-green-400 to-emerald-400' :
-                            'from-orange-400 to-red-400'
-                          } rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
+                              index % 4 === 2 ? 'from-green-400 to-emerald-400' :
+                                'from-orange-400 to-red-400'
+                            } rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
                             {b.fullName?.split(' ').map(n => n[0]).join('')}
                           </div>
-                          <p className="font-semibold text-slate-900">{b.fullName}</p>
+                          <p className="font-semibold text-slate-900 dark:text-white">{b.fullName}</p>
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <span className="font-mono text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">{b.uniqueId}</span>
+                        <span className="font-mono text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-lg">{b.uniqueId}</span>
                       </td>
-                      <td className="py-4 px-6 text-gray-700">{b.location}</td>
+                      <td className="py-4 px-6 text-gray-700 dark:text-gray-300">{b.location}</td>
                       <td className="py-4 px-6">
-                        <span className="font-semibold text-gray-900">{b.householdSize || '—'}</span>
-                        {b.householdSize && <span className="text-gray-500 text-sm ml-1">people</span>}
+                        <span className="font-semibold text-gray-900 dark:text-white">{b.householdSize || '—'}</span>
+                        {b.householdSize && <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">people</span>}
                       </td>
                       <td className="py-4 px-6">
                         <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getVulnerabilityColor(b.vulnerability)}`}>
                           {b.vulnerability || '—'}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-gray-600 text-sm">
+                      <td className="py-4 px-6 text-gray-600 dark:text-gray-300 text-sm">
                         {new Date(b.$createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                     </tr>
@@ -334,8 +304,8 @@ function Beneficiaries() {
               </table>
             </div>
           )}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
+          <div className="bg-gray-50 dark:bg-slate-800 px-6 py-4 border-t border-gray-200 dark:border-slate-700 transition-colors">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Showing <span className="font-semibold">{filteredBeneficiaries.length}</span> of{' '}
               <span className="font-semibold">{beneficiaries.length}</span> beneficiaries
             </p>

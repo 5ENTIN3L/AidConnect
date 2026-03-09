@@ -48,25 +48,38 @@ function Login() {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 flex-col justify-between p-12">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+      {/* Left Panel with Background Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Background Image Container */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/login-hero.jpg')` }}
+        ></div>
+        {/* Dark Gradient Overlay for Text Readability */}
+        <div className="absolute inset-0 z-0 bg-blue-900/80 mix-blend-multiply"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-900/90 via-blue-800/80 to-slate-900/90"></div>
+
+        {/* Content Layer */}
+        <div className="relative z-10 flex flex-col justify-between w-full h-full p-12">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-white">AidConnect</h1>
           </div>
-          <h1 className="text-2xl font-bold text-white">AidConnect</h1>
-        </div>
-        <div>
-          <h2 className="text-4xl font-bold text-white leading-tight mb-4">Transforming Humanitarian<br />Aid Distribution</h2>
-          <p className="text-blue-200 text-lg mb-10">Coordinating resources, preventing duplication, and ensuring transparent aid delivery to communities in need.</p>
-          <div className="flex gap-10">
-            <div><p className="text-3xl font-bold text-amber-400">1,248</p><p className="text-blue-300 text-sm mt-1">Beneficiaries</p></div>
-            <div><p className="text-3xl font-bold text-amber-400">45</p><p className="text-blue-300 text-sm mt-1">NGOs Connected</p></div>
-            <div><p className="text-3xl font-bold text-amber-400">98%</p><p className="text-blue-300 text-sm mt-1">Success Rate</p></div>
+          <div>
+            <h2 className="text-4xl font-bold text-white leading-tight mb-4">Transforming Humanitarian<br />Aid Distribution</h2>
+            <p className="text-blue-200 text-lg mb-10">Coordinating resources, preventing duplication, and ensuring transparent aid delivery to communities in need.</p>
+            <div className="flex gap-10">
+              <div><p className="text-3xl font-bold text-amber-400">1,248</p><p className="text-blue-300 text-sm mt-1">Beneficiaries</p></div>
+              <div><p className="text-3xl font-bold text-amber-400">45</p><p className="text-blue-300 text-sm mt-1">NGOs Connected</p></div>
+              <div><p className="text-3xl font-bold text-amber-400">98%</p><p className="text-blue-300 text-sm mt-1">Success Rate</p></div>
+            </div>
           </div>
+          <p className="text-blue-400 text-sm">© 2024 AidConnect. Securing humanitarian aid distribution.</p>
         </div>
-        <p className="text-blue-400 text-sm">© 2024 AidConnect. Securing humanitarian aid distribution.</p>
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 p-8">

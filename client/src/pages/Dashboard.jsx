@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { appwriteService } from '../services/api';
+import NavBar from '../components/NavBar';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,11 +13,6 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem('user') || '{"fullName": "User", "role": "ngo_admin"}');
-
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/';
-  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -58,42 +54,22 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent">AidConnect</h1>
-            </div>
-            <div className="flex items-center gap-6">
-              <button onClick={() => window.navigateTo('beneficiaries')} className="text-gray-600 hover:text-blue-600 font-medium transition">Beneficiaries</button>
-              <button onClick={() => window.navigateTo('requests')} className="text-gray-600 hover:text-blue-600 font-medium transition">Aid Requests</button>
-              <button onClick={() => window.navigateTo('deliveries')} className="text-gray-600 hover:text-blue-600 font-medium transition">Deliveries</button>
-              <button onClick={() => window.navigateTo('reports')} className="text-gray-600 hover:text-blue-600 font-medium transition">Reports</button>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900">{user.fullName}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user.role?.replace('_', ' ')}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                  {user.fullName?.charAt(0)}
-                </div>
-              </div>
-              <button onClick={handleLogout} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">Logout</button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">
+      {/* Ambient Animated Background */}
+      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 pointer-events-none">
+        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] animate-blob" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+      </div>
+      <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] pointer-events-none">
+        <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80b5ff] to-[#4ade80] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem] animate-blob animation-delay-2000" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+      </div>
+      <div className="absolute top-1/2 left-1/4 -z-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <NavBar activePage="dashboard" />
+
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Dashboard Overview</h2>
-          <p className="text-gray-600">Welcome back, {user.fullName}! Here's your live aid distribution summary.</p>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Dashboard Overview</h2>
+          <p className="text-gray-600 dark:text-gray-300">Welcome back, {user.fullName}! Here's your live aid distribution summary.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -150,9 +126,9 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-slate-700 transition-colors">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-slate-900">Recently Registered Beneficiaries</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recently Registered Beneficiaries</h3>
             <button onClick={() => window.navigateTo('beneficiaries')} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">View All</button>
           </div>
 
@@ -161,46 +137,44 @@ function Dashboard() {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <p className="text-gray-500 font-medium">No beneficiaries registered yet</p>
-              <p className="text-gray-400 text-sm mt-1">Go to Beneficiaries to add your first one</p>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">No beneficiaries registered yet</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Go to Beneficiaries to add your first one</p>
               <button onClick={() => window.navigateTo('beneficiaries')} className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">Add Beneficiary</button>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">ID</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Location</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Vulnerability</th>
+                  <tr className="border-b border-gray-200 dark:border-slate-700">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Name</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">ID</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Location</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Vulnerability</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentBeneficiaries.map((b, index) => (
-                    <tr key={b.$id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <tr key={b.$id} className="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${
-                            index % 4 === 0 ? 'from-purple-400 to-pink-400' :
+                          <div className={`w-10 h-10 bg-gradient-to-br ${index % 4 === 0 ? 'from-purple-400 to-pink-400' :
                             index % 4 === 1 ? 'from-blue-400 to-cyan-400' :
-                            index % 4 === 2 ? 'from-green-400 to-emerald-400' :
-                            'from-orange-400 to-red-400'
-                          } rounded-full flex items-center justify-center text-white font-bold`}>
+                              index % 4 === 2 ? 'from-green-400 to-emerald-400' :
+                                'from-orange-400 to-red-400'
+                            } rounded-full flex items-center justify-center text-white font-bold`}>
                             {b.fullName?.charAt(0)}
                           </div>
-                          <p className="font-medium text-slate-900">{b.fullName}</p>
+                          <p className="font-medium text-slate-900 dark:text-white">{b.fullName}</p>
                         </div>
                       </td>
-                      <td className="py-4 px-4"><span className="font-mono text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">{b.uniqueId}</span></td>
-                      <td className="py-4 px-4 text-gray-600 text-sm">{b.location}</td>
+                      <td className="py-4 px-4"><span className="font-mono text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">{b.uniqueId}</span></td>
+                      <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">{b.location}</td>
                       <td className="py-4 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                          b.vulnerability === 'CRITICAL' ? 'bg-red-100 text-red-700 border-red-200' :
-                          b.vulnerability === 'HIGH' ? 'bg-orange-100 text-orange-700 border-orange-200' :
-                          b.vulnerability === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
-                          'bg-green-100 text-green-700 border-green-200'
-                        }`}>{b.vulnerability}</span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${b.vulnerability === 'CRITICAL' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800' :
+                          b.vulnerability === 'HIGH' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800' :
+                            b.vulnerability === 'MEDIUM' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800' :
+                              'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800'
+                          }`}>{b.vulnerability}</span>
                       </td>
                     </tr>
                   ))}
