@@ -28,7 +28,8 @@ function Landing() {
     // Hook into the scroll position of the hero container
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"]
+        offset: ["start start", "end end"],
+        layoutEffect: false  // ← Prevents the warnOnce measurement issue with Lenis
     });
 
     // Map scroll progress (0 to 1) to visual properties
@@ -124,8 +125,9 @@ function Landing() {
                     {/* DENSE ANIMATION GRID - Positioned lower to avoid text entirely */}
                     <div className="absolute top-[65%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1400px] h-[70vh] flex items-center justify-center">
 
-                        {/* Center Main Image (Nestled at z-30) */}
+                        {/* Center Main Image */}
                         <motion.div
+                            layout={false}  // ← Disables projection node that triggers the warning
                             style={{
                                 scale: centerScale,
                                 borderRadius: centerRadius,
@@ -133,7 +135,11 @@ function Landing() {
                             }}
                             className="absolute z-30 w-full md:w-[800px] h-[350px] md:h-[500px] bg-cover bg-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] origin-center pointer-events-auto"
                         >
-                            <motion.div style={{ opacity: gridOpacity }} className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-[inherit] transition-colors">
+                            <motion.div
+                                layout={false}  // ← Same here
+                                style={{ opacity: gridOpacity }}
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-[inherit] transition-colors"
+                            >
                                 <button onClick={() => window.navigateTo('login')} className="px-10 py-5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full font-bold shadow-2xl hover:bg-blue-800 hover:scale-105 transition-all text-lg ring-4 ring-blue-500/30">
                                     Launch Portal
                                 </button>
