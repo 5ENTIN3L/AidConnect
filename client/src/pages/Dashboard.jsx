@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { appwriteService } from '../services/api';
 import NavBar from '../components/NavBar';
+import { useAuth } from '../context/AuthContext';
+import { useRealtime } from '../hooks/useRealtime';
+
+const DB_ID = process.env.REACT_APP_APPWRITE_DATABASE_ID || 'aidconnect_db';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -11,38 +15,58 @@ function Dashboard() {
   });
   const [recentBeneficiaries, setRecentBeneficiaries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const debounceRef = useRef(null);
 
-  const user = JSON.parse(localStorage.getItem('user') || '{"fullName": "User", "role": "ngo_admin"}');
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const [statsData, recentData, requestsData, deliveriesData] = await Promise.all([
+        appwriteService.getStats(),
+        appwriteService.getRecentBeneficiaries(),
+        appwriteService.getAidRequests(),
+        appwriteService.getDeliveries(),
+      ]);
+
+      const pendingRequests = requestsData.documents.filter(r => r.status === 'PENDING').length;
+      const activeDeliveries = deliveriesData.documents.filter(d =>
+        d.status === 'scheduled' || d.status === 'in_progress'
+      ).length;
+      const completedDeliveries = deliveriesData.documents.filter(d =>
+        d.status === 'delivered'
+      ).length;
+
+      setStats({
+        totalBeneficiaries: statsData.totalBeneficiaries,
+        pendingRequests,
+        activeDeliveries,
+        completedDeliveries,
+      });
+      setRecentBeneficiaries(recentData.documents);
+    } catch (error) {
+      console.error('Dashboard data fetch failed:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const [statsData, recentData, requestsData, deliveriesData] = await Promise.all([
-          appwriteService.getStats(),
-          appwriteService.getRecentBeneficiaries(),
-          appwriteService.getAidRequests(),
-          appwriteService.getDeliveries(),
-        ]);
-
-        const pendingRequests = requestsData.documents.filter(r => r.status === 'PENDING').length;
-        const activeDeliveries = deliveriesData.documents.filter(d => d.status === 'scheduled' || d.status === 'in_progress').length;
-        const completedDeliveries = deliveriesData.documents.filter(d => d.status === 'delivered').length;
-
-        setStats({
-          totalBeneficiaries: statsData.totalBeneficiaries,
-          pendingRequests,
-          activeDeliveries,
-          completedDeliveries,
-        });
-        setRecentBeneficiaries(recentData.documents);
-      } catch (error) {
-        console.error('Dashboard data fetch failed:', error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchDashboardData();
-  }, []);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [fetchDashboardData]);
+
+  // Memoize channels — prevents re-creating array on every render
+  const realtimeChannels = useMemo(() => [
+    `databases.${DB_ID}.collections.beneficiaries.documents`,
+    `databases.${DB_ID}.collections.aid_requests.documents`,
+    `databases.${DB_ID}.collections.deliveries.documents`,
+  ], []);
+
+  const { isConnected } = useRealtime(realtimeChannels, () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(fetchDashboardData, 500);
+  });
 
   if (loading) {
     return (
@@ -55,21 +79,25 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">
-      {/* Ambient Animated Background */}
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 pointer-events-none">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] animate-blob" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+
+      {/* Connection Status Indicator */}
+      <div className={`fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium shadow-lg transition-all ${
+        isConnected
+          ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400'
+          : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
+      }`}>
+        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+        {isConnected ? 'Live' : 'Offline'}
       </div>
-      <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] pointer-events-none">
-        <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80b5ff] to-[#4ade80] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem] animate-blob animation-delay-2000" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
-      </div>
-      <div className="absolute top-1/2 left-1/4 -z-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none"></div>
 
       <NavBar activePage="dashboard" />
 
       <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Dashboard Overview</h2>
-          <p className="text-gray-600 dark:text-gray-300">Welcome back, {user.fullName}! Here's your live aid distribution summary.</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            Welcome back, {user?.fullName}! Here's your live aid distribution summary.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
