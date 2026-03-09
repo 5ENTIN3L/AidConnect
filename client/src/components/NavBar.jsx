@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../App';
+import { useAuth } from '../context/AuthContext';
 
 function NavBar({ activePage }) {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-    const user = JSON.parse(localStorage.getItem('user') || '{"fullName": "User", "role": "ngo_admin"}');
+    const { user, logout } = useAuth();
 
-    const handleLogout = () => {
-        localStorage.clear();
-        window.location.href = '/';
+    console.log('User from AuthContext:', user);
+
+    const handleLogout = async () => {
+        await logout();
+        window.navigateTo('landing');
     };
 
     useEffect(() => {
@@ -22,7 +25,7 @@ function NavBar({ activePage }) {
     }, []);
 
     let navLinks = [];
-    if (user.role === 'ngo_admin') {
+    if (user?.role === 'admin') {
         navLinks = [
             { id: 'dashboard', label: 'Dashboard' },
             { id: 'beneficiaries', label: 'Beneficiaries' },
@@ -106,12 +109,12 @@ function NavBar({ activePage }) {
                                     </div>
                                 )}
                                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-                                    {user.fullName?.charAt(0)}
+                                    {user?.fullName?.charAt(0)}
                                 </div>
                                 {scrolled && (
                                     <div className="text-left flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{user.fullName}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">{user.role?.replace('_', ' ')}</p>
+                                        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{user?.fullName}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">{user?.role?.replace('_', ' ')}</p>
                                     </div>
                                 )}
 
