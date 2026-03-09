@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
                 id: session.$id,
                 fullName: session.name,
                 email: session.email,
-                role: session.labels?.[0] || 'ngo_admin',
+                role: session.labels?.[0] || 'admin',
             });
         } catch {
             setUser(null);

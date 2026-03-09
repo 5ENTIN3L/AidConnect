@@ -8,7 +8,23 @@ function NavBar({ activePage }) {
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
     const { user, logout } = useAuth();
 
-    console.log('User from AuthContext:', user);
+    const staffRoles = ['admin', 'staff'];
+    const isStaff = staffRoles.includes(user?.role);
+
+    let navLinks = [];
+    if (isStaff) {
+        navLinks = [
+            { id: 'dashboard', label: 'Dashboard' },
+            { id: 'beneficiaries', label: 'Beneficiaries' },
+            { id: 'requests', label: 'Aid Requests' },
+            { id: 'deliveries', label: 'Deliveries' },
+            { id: 'reports', label: 'Reports' },
+        ];
+    } else {
+        navLinks = [
+            { id: 'dashboard', label: 'My Portal' }
+        ];
+    }
 
     const handleLogout = async () => {
         await logout();
@@ -23,21 +39,6 @@ function NavBar({ activePage }) {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    let navLinks = [];
-    if (user?.role === 'admin') {
-        navLinks = [
-            { id: 'dashboard', label: 'Dashboard' },
-            { id: 'beneficiaries', label: 'Beneficiaries' },
-            { id: 'requests', label: 'Aid Requests' },
-            { id: 'deliveries', label: 'Deliveries' },
-            { id: 'reports', label: 'Reports' },
-        ];
-    } else {
-        navLinks = [
-            { id: 'dashboard', label: 'My Portal' }
-        ];
-    }
 
     return (
         <>
