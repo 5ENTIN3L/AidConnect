@@ -1,13 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import { appwriteService } from '../services/api';
 
 function Dashboard() {
   const [stats, setStats] = useState({
-    totalBeneficiaries: 1248,
+    totalBeneficiaries: 0,
     pendingRequests: 45,
     activeDeliveries: 28,
-    completedDeliveries: 892,
+    completedDeliveries: 0,
     completionRate: 94,
   });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const data = await appwriteService.getStats();
+        setStats(prev => ({ 
+          ...prev,
+          totalBeneficiaries: data.totalBeneficiaries,
+          completedDeliveries: data.totalDeliveries, 
+        }));
+      } catch (error) {
+        console.error("Dashboard data fetch failed:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const user = JSON.parse(localStorage.getItem('user') || '{"fullName": "John Doe", "role": "ngo_admin"}');
 
@@ -15,6 +37,16 @@ function Dashboard() {
     localStorage.clear();
     window.location.href = '/';
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        {/* Simple Loading Spinner */}
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p className="ml-4 text-gray-600">Syncing with AidConnect Cloud...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
