@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../App';
 import { useAuth } from '../context/AuthContext';
-import { ROLE_PAGES, getRoleLabel, getRoleBadgeColor } from '../config/rbac';
+import { getRoleLabel, getRoleBadgeColor } from '../config/rbac';
 
 function NavBar({ activePage }) {
     const [scrolled, setScrolled]     = useState(false);
