@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { account } from '../services/api';
+import { hasPermission, canAccessPage, getDefaultPage } from '../config/rbac';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
+    const [user, setUser]       = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check for existing session on app load
     useEffect(() => {
         checkSession();
     }, []);
@@ -15,11 +15,12 @@ export function AuthProvider({ children }) {
     const checkSession = async () => {
         try {
             const session = await account.get();
+            const role = session.labels?.[0] || 'viewer'; // Appwrite label e.g. 'superadmin'
             setUser({
-                id: session.$id,
+                id:       session.$id,
                 fullName: session.name,
-                email: session.email,
-                role: session.labels?.[0] || 'admin',
+                email:    session.email,
+                role,
             });
         } catch {
             setUser(null);
@@ -38,18 +39,29 @@ export function AuthProvider({ children }) {
             await account.deleteSession('current');
         } catch (err) {
             console.warn('Session deletion failed:', err.message);
-            // Continue with local logout even if session delete fails
         } finally {
             setUser(null);
-            // Clear any residual localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.navigateTo('landing');
         }
     };
 
+    // ── Permission helpers exposed to all components ──────────
+    const can = (permission) => hasPermission(user?.role, permission);
+    const canAccess = (page) => canAccessPage(user?.role, page);
+    const defaultPage = getDefaultPage(user?.role);
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{
+            user,
+            loading,
+            login,
+            logout,
+            can,          // e.g. can('DELETE_BENEFICIARY')
+            canAccess,    // e.g. canAccess('reports')
+            defaultPage,  // e.g. 'dashboard'
+        }}>
             {children}
         </AuthContext.Provider>
     );
