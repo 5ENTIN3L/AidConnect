@@ -112,7 +112,7 @@ function AidRequests() {
         beneficiaryId: formData.beneficiaryId,
         beneficiaryName: formData.beneficiaryName,
         aidType: formData.aidType,
-        quantity: formData.quantity,
+        quantity: parseInt(formData.quantity) || 0,
         urgency: formData.urgency,
         description: formData.description,
         location: formData.location,

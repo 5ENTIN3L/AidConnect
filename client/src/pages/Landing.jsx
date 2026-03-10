@@ -28,7 +28,8 @@ function Landing() {
     // Hook into the scroll position of the hero container
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"]
+        offset: ["start start", "end end"],
+        layoutEffect: false  // ← Prevents the warnOnce measurement issue with Lenis
     });
 
     // Map scroll progress (0 to 1) to visual properties
@@ -126,6 +127,7 @@ function Landing() {
                         <motion.div style={{ opacity: gridOpacity }} className="absolute inset-0 bg-black/40 rounded-[inherit] transition-colors" />
                     </motion.div>
 
+<<<<<<< HEAD
                     {/* --- INNER GRID (4 Images) --- */}
                     <motion.div
                         style={{ y: innerImagesY, x: innerImagesXLeft, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1593113565694-c708fa0d592c?q=80&w=800')" }}
@@ -143,6 +145,65 @@ function Landing() {
                         style={{ y: innerImagesYDown, x: innerImagesXRight, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800')" }}
                         className="absolute bottom-[5%] right-[12%] md:right-[20%] z-20 w-32 h-48 md:w-48 md:h-64 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none"
                     />
+=======
+                        {/* Center Main Image */}
+                        <motion.div
+                            layout={false}  // ← Disables projection node that triggers the warning
+                            style={{
+                                scale: centerScale,
+                                borderRadius: centerRadius,
+                                backgroundImage: "url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop')"
+                            }}
+                            className="absolute z-30 w-full md:w-[800px] h-[350px] md:h-[500px] bg-cover bg-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] origin-center pointer-events-auto"
+                        >
+                            <motion.div
+                                layout={false}  // ← Same here
+                                style={{ opacity: gridOpacity }}
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-[inherit] transition-colors"
+                            >
+                                <button onClick={() => window.navigateTo('login')} className="px-10 py-5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full font-bold shadow-2xl hover:bg-blue-800 hover:scale-105 transition-all text-lg ring-4 ring-blue-500/30">
+                                    Launch Portal
+                                </button>
+                            </motion.div>
+                        </motion.div>
+
+                        {/* --- INNER GRID (4 Images) --- */}
+                        <motion.div
+                            style={{ y: innerImagesY, x: innerImagesXLeft, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1593113565694-c708fa0d592c?q=80&w=800')" }}
+                            className="absolute top-[2%] left-[10%] md:left-[15%] z-20 w-40 h-40 md:w-56 md:h-48 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                        />
+                        <motion.div
+                            style={{ y: innerImagesY, x: innerImagesXRight, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb0?q=80&w=800')" }}
+                            className="absolute top-[5%] right-[10%] md:right-[15%] z-40 w-48 h-32 md:w-64 md:h-40 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                        />
+                        <motion.div
+                            style={{ y: innerImagesYDown, x: innerImagesXLeft, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=800')" }}
+                            className="absolute bottom-[5%] left-[8%] md:left-[20%] z-40 w-48 h-48 md:w-56 md:h-56 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                        />
+                        <motion.div
+                            style={{ y: innerImagesYDown, x: innerImagesXRight, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800')" }}
+                            className="absolute bottom-[2%] right-[10%] md:right-[15%] z-20 w-40 h-56 md:w-48 md:h-64 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none"
+                        />
+
+                        {/* --- OUTER GRID (4 Images) --- */}
+                        <motion.div
+                            style={{ y: outerImagesY, x: outerImagesXLeft, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1488522363945-8ceac42db1eb?q=80&w=800')" }}
+                            className="absolute top-[20%] left-[-5%] md:left-[-2%] z-10 w-32 h-40 md:w-48 md:h-64 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none hidden md:block"
+                        />
+                        <motion.div
+                            style={{ y: outerImagesYDown, x: outerImagesXRight, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1590439471364-192aa70c0b53?q=80&w=800')" }}
+                            className="absolute bottom-[25%] right-[-5%] md:right-[0%] z-20 w-32 h-32 md:w-48 md:h-48 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none hidden md:block"
+                        />
+                        <motion.div
+                            style={{ y: outerImagesY, x: outerImagesXRight, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1510313174249-163e7acb8dd6?q=80&w=800')" }}
+                            className="absolute top-[-10%] right-[20%] md:right-[25%] z-10 w-40 h-40 md:w-56 md:h-40 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none hidden lg:block"
+                        />
+                        <motion.div
+                            style={{ y: outerImagesYDown, x: outerImagesXLeft, opacity: gridOpacity, backgroundImage: "url('https://images.unsplash.com/photo-1481819613568-3701cbc70156?q=80&w=800')" }}
+                            className="absolute bottom-[-10%] left-[20%] md:left-[30%] z-10 w-40 h-32 md:w-56 md:h-48 rounded-3xl bg-cover bg-center shadow-2xl ring-1 ring-white/10 pointer-events-none hidden lg:block"
+                        />
+                    </div>
+>>>>>>> eb05bd697e8a59e033ac0b05361544534869a9c3
 
                     {/* --- OUTER GRID (4 Images) --- */}
                     <motion.div
