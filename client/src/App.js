@@ -58,6 +58,7 @@ function AppInner() {
     }
 
     // ── Staff / NGO Admin role ───────────────────────────────────
+    // Covers 'admin' and 'staff'
     if (currentPage === 'beneficiaries') return <Beneficiaries />;
     if (currentPage === 'requests') return <AidRequests />;
     if (currentPage === 'deliveries') return <Deliveries />;
