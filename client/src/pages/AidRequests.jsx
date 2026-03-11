@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { databases } from '../services/api';
+import { useRealtimeCollection } from '../hooks/useRealtimeCollection';
 import { Query, ID } from 'appwrite';
 import NavBar from '../components/NavBar';
 
 function AidRequests() {
-  const [requests, setRequests] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -24,35 +23,32 @@ function AidRequests() {
     location: '',
   });
 
-
+  // ── Realtime collection ──────────────────────────────────────
+  const {
+    documents: requests,
+    loading,
+    fetchData: fetchRequests,
+  } = useRealtimeCollection('aid_requests', () =>
+    databases.listDocuments('aidconnect_db', 'aid_requests', [
+      Query.orderDesc('$createdAt'),
+      Query.limit(50),
+    ])
+  );
 
   useEffect(() => {
     fetchRequests();
     fetchBeneficiaries();
-  }, []);
-
-  const fetchRequests = async () => {
-    try {
-      setLoading(true);
-      const response = await databases.listDocuments('aidconnect_db', 'aid_requests', [
-        Query.orderDesc('$createdAt'),
-        Query.limit(50)
-      ]);
-      setRequests(response.documents);
-    } catch (error) {
-      console.error('Failed to fetch requests:', error.message);
-      setRequests([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchRequests]);
 
   const fetchBeneficiaries = async () => {
     try {
-      const response = await databases.listDocuments('aidconnect_db', 'beneficiaries', [Query.limit(100)]);
+      const response = await databases.listDocuments('aidconnect_db', 'beneficiaries', [
+        Query.orderDesc('$createdAt'),
+        Query.limit(100),
+      ]);
       setBeneficiaries(response.documents);
-    } catch (error) {
-      console.error('Failed to fetch beneficiaries:', error.message);
+    } catch (err) {
+      console.error('Failed to fetch beneficiaries:', err.message);
     }
   };
 
@@ -153,7 +149,9 @@ function AidRequests() {
     }
   };
 
-  const filteredRequests = requests.filter(r => filterStatus === 'ALL' || r.status === filterStatus);
+  const filteredRequests = filterStatus === 'ALL'
+    ? requests
+    : requests.filter(r => r.status === filterStatus);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">

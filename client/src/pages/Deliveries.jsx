@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { databases } from '../services/api';
+import { useRealtimeCollection } from '../hooks/useRealtimeCollection';
 import { Query } from 'appwrite';
 import NavBar from '../components/NavBar';
 
 function Deliveries() {
-  const [deliveries, setDeliveries] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [showRecordForm, setShowRecordForm] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
@@ -13,27 +12,21 @@ function Deliveries() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
-
+  // ── Realtime collection ──────────────────────────────────────
+  const {
+    documents: deliveries,
+    loading,
+    fetchData: fetchDeliveries,
+  } = useRealtimeCollection('deliveries', () =>
+    databases.listDocuments('aidconnect_db', 'deliveries', [
+      Query.orderDesc('$createdAt'),
+      Query.limit(50),
+    ])
+  );
 
   useEffect(() => {
     fetchDeliveries();
-  }, []);
-
-  const fetchDeliveries = async () => {
-    try {
-      setLoading(true);
-      const response = await databases.listDocuments('aidconnect_db', 'deliveries', [
-        Query.orderDesc('$createdAt'),
-        Query.limit(20)
-      ]);
-      setDeliveries(response.documents);
-    } catch (error) {
-      console.error('Failed to fetch deliveries:', error.message);
-      setDeliveries([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchDeliveries]);
 
   const handleRecordDelivery = (delivery) => {
     setSelectedDelivery(delivery);
@@ -50,13 +43,12 @@ function Deliveries() {
         status: 'delivered',
         deliveryDate: new Date().toISOString().split('T')[0],
       });
-      setSuccess('Delivery recorded successfully!');
+      setSuccess('Delivery marked as complete!');
       setShowRecordForm(false);
       setSelectedDelivery(null);
-      fetchDeliveries();
+      // No need to manually refetch — Realtime will update automatically ✅
     } catch (err) {
       setError('Failed to update delivery. Please try again.');
-      console.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -64,15 +56,22 @@ function Deliveries() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'scheduled': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'in_progress': return 'bg-orange-100 text-orange-700 border-orange-200';
-      case 'delivered': return 'bg-green-100 text-green-700 border-green-200';
-      case 'failed': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
+      case 'in_progress':
+        return 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800';
+      case 'delivered':
+        return 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
+      case 'failed':
+        return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-800';
     }
   };
 
-  const filteredDeliveries = deliveries.filter(d => filterStatus === 'ALL' || d.status === filterStatus);
+  const filteredDeliveries = filterStatus === 'ALL'
+    ? deliveries
+    : deliveries.filter(d => d.status === filterStatus.toLowerCase());
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 relative overflow-hidden">
