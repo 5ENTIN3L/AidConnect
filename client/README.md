@@ -1,6 +1,12 @@
-# Getting Started with Create React App
+# AidConnect Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React-based frontend for the AidConnect NGO Aid Distribution Coordination System.
+
+For full project documentation, see the [root README](../README.md).
+
+---
+
+## Getting Started
 
 ## Available Scripts
 
