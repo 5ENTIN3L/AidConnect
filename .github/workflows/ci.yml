@@ -48,9 +48,13 @@ jobs:
           GENERATE_SOURCEMAP: false
 
       - name: Run Tests
+        working-directory: ./client
         run: npm test -- --watchAll=false --passWithNoTests
         env:
           CI: true
+          REACT_APP_APPWRITE_ENDPOINT: ${{ secrets.REACT_APP_APPWRITE_ENDPOINT }}
+          REACT_APP_APPWRITE_PROJECT_ID: ${{ secrets.REACT_APP_APPWRITE_PROJECT_ID }}
+          REACT_APP_APPWRITE_DATABASE_ID: ${{ secrets.REACT_APP_APPWRITE_DATABASE_ID }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
