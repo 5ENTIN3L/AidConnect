@@ -66,7 +66,7 @@ function AidRequests() {
 
     if (duplicate) {
       setDuplicationWarning(
-        `⚠️ Warning: This beneficiary already received ${aidType} aid on ${new Date(duplicate.$createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}. Submitting may violate the 30-day duplication policy.`
+        `Warning: This beneficiary already received ${aidType} aid on ${new Date(duplicate.$createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}. Submitting may violate the 30-day duplication policy.`
       );
     } else {
       setDuplicationWarning('');
