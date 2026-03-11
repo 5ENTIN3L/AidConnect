@@ -19,7 +19,7 @@ export function useRealtimeCollection(collectionId, fetcher) {
         } finally {
             setLoading(false);
         }
-    }, [collectionId]);
+    }, [collectionId, fetcher]);
 
     const handleRealtimeEvent = useCallback((response) => {
         const { events, payload } = response;
