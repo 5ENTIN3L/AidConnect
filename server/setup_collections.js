@@ -18,12 +18,13 @@ const collections = [
         id: 'beneficiaries',
         name: 'Beneficiaries',
         attributes: [
-            { type: 'string',  key: 'fullName',      size: 100, required: true  },
-            { type: 'string',  key: 'uniqueId',       size: 50,  required: true  },
-            { type: 'string',  key: 'location',       size: 100, required: true  },
-            { type: 'string',  key: 'vulnerability',  size: 20,  required: true  },
-            { type: 'string',  key: 'phone',          size: 20,  required: false },
-            { type: 'string',  key: 'notes',          size: 500, required: false },
+            { type: 'string',  key: 'fullName',       size: 100, required: true  },
+            { type: 'string',  key: 'uniqueId',        size: 50,  required: true  },
+            { type: 'string',  key: 'location',        size: 100, required: true  },
+            { type: 'string',  key: 'vulnerability',   size: 20,  required: true  },
+            { type: 'string',  key: 'phone',           size: 20,  required: false },
+            { type: 'string',  key: 'notes',           size: 500, required: false },
+            { type: 'integer', key: 'householdSize',             required: false }, // ← ADD
         ],
         indexes: [
             { key: 'uniqueId_idx',   type: 'unique',   attributes: ['uniqueId']   },
@@ -143,4 +144,58 @@ async function setupCollections() {
     console.log('\n🎉 Database schema setup complete!');
 }
 
-setupCollections();
+async function setupRelationships() {
+    console.log('\n⏳ Setting up relationships...');
+
+    const relationships = [
+        {
+            // aid_requests.beneficiaryId → beneficiaries.$id
+            collectionId: 'aid_requests',
+            relatedCollectionId: 'beneficiaries',
+            type: sdk.RelationshipType.ManyToOne,
+            twoWay: true,
+            key: 'beneficiary',
+            twoWayKey: 'aidRequests',
+            onDelete: sdk.RelationMutate.Restrict, // can't delete beneficiary with active requests
+        },
+        {
+            // deliveries.beneficiaryId → beneficiaries.$id
+            collectionId: 'deliveries',
+            relatedCollectionId: 'beneficiaries',
+            type: sdk.RelationshipType.ManyToOne,
+            twoWay: true,
+            key: 'beneficiary',
+            twoWayKey: 'deliveries',
+            onDelete: sdk.RelationMutate.Restrict, // can't delete beneficiary with deliveries
+        },
+    ];
+
+    for (const rel of relationships) {
+        try {
+            await databases.createRelationshipAttribute(
+                DB,
+                rel.collectionId,
+                rel.relatedCollectionId,
+                rel.type,
+                rel.twoWay,
+                rel.key,
+                rel.twoWayKey,
+                rel.onDelete,
+            );
+            console.log(`  ✅ ${rel.collectionId} → ${rel.relatedCollectionId}`);
+        } catch (e) {
+            if (e.code === 409) console.log(`  ℹ️  Relationship already exists`);
+            else console.error(`  ❌ ${rel.collectionId}: ${e.message}`);
+        }
+    }
+
+    console.log('✅ Relationships done!');
+}
+
+// Update main function to call both
+async function main() {
+    await setupCollections();
+    await setupRelationships();
+}
+
+main();
