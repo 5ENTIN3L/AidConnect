@@ -94,7 +94,7 @@ jobs:
         continue-on-error: true
 
       - name: Run Tests
-        run: npm test -- --passWithNoTests
+        run: npm test
         env:
           CI: true
 
