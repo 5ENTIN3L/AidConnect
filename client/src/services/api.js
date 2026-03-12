@@ -60,7 +60,8 @@ export const appwriteService = {
     if (!data.uniqueId?.trim())     throw new Error('National ID is required.');
     if (!data.location?.trim())     throw new Error('Location is required.');
     if (!data.vulnerability)        throw new Error('Vulnerability level is required.');
-    if (!data.householdSize || parseInt(data.householdSize) < 1)
+    const householdSize = parseInt(data.householdSize);
+    if (!data.householdSize || Number.isNaN(householdSize) || householdSize < 1)
                                     throw new Error('Household size must be at least 1.');
 
     // ── Check duplicate National ID ─────────────────────────
@@ -73,23 +74,32 @@ export const appwriteService = {
     }
 
     return await databases.createDocument(DB, 'beneficiaries', ID.unique(), {
-      fullName:      data.fullName.trim(),
-      uniqueId:      data.uniqueId.trim(),
-      location:      data.location.trim(),
-      vulnerability: data.vulnerability,
-      phone:         data.phone?.trim() || null,       // ← was missing
-      notes:         data.notes?.trim() || null,
+      fullName:       data.fullName.trim(),
+      uniqueId:       data.uniqueId.trim(),
+      location:       data.location.trim(),
+      vulnerability:  data.vulnerability,
+      householdSize:  householdSize,
+      phone:          data.phone?.trim() || null,
+      notes:          data.notes?.trim() || null,
     });
   },
 
   updateBeneficiary: async (id, data) => {
-    return await databases.updateDocument(DB, 'beneficiaries', id, {
+    const updatedFields = {
       fullName:      data.fullName?.trim(),
       location:      data.location?.trim(),
       vulnerability: data.vulnerability,
       phone:         data.phone?.trim() || null,
       notes:         data.notes?.trim() || null,
-    });
+    };
+    if (data.householdSize !== undefined) {
+      const householdSize = parseInt(data.householdSize);
+      if (Number.isNaN(householdSize) || householdSize < 1) {
+        throw new Error('Household size must be at least 1.');
+      }
+      updatedFields.householdSize = householdSize;
+    }
+    return await databases.updateDocument(DB, 'beneficiaries', id, updatedFields);
   },
 
   deleteBeneficiary: async (id) => {

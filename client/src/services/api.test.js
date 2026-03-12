@@ -88,10 +88,34 @@ describe('appwriteService', () => {
         fullName: 'Jane Doe',
         uniqueId: '1234',
         location: 'Nairobi',
+        householdSize: 4,
         phone: '0700000000',
         notes: 'urgent',
       })
     );
+  });
+
+  test('createBeneficiary rejects non-numeric householdSize', async () => {
+    await expect(
+      appwriteService.createBeneficiary({
+        fullName: 'Jane Doe',
+        uniqueId: '1234',
+        location: 'Nairobi',
+        vulnerability: 'HIGH',
+        householdSize: 'abc',
+      })
+    ).rejects.toThrow('Household size must be at least 1.');
+  });
+
+  test('updateBeneficiary rejects invalid householdSize', async () => {
+    await expect(
+      appwriteService.updateBeneficiary('benef-1', {
+        fullName: 'Jane Doe',
+        location: 'Nairobi',
+        vulnerability: 'HIGH',
+        householdSize: -1,
+      })
+    ).rejects.toThrow('Household size must be at least 1.');
   });
 
   test('deleteBeneficiary blocks when active requests exist', async () => {

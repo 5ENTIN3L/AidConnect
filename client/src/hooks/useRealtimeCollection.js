@@ -25,8 +25,6 @@ export function useRealtimeCollection(collectionId, fetcher) {
         const { events, payload } = response;
         if (!events || !payload) return;
 
-        console.log('Realtime event received:', events); // ← temporary debug
-
         const isCreate = events.some(e => e.includes('.create'));
         const isUpdate = events.some(e => e.includes('.update'));
         const isDelete = events.some(e => e.includes('.delete'));
