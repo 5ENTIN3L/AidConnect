@@ -33,3 +33,5 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+client/test-results/
+client/playwright-report/

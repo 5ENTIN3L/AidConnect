@@ -21,6 +21,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --watch=false --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:auth": "playwright test -c playwright.auth.config.js",
+    "build:test": "cross-env REACT_APP_APPWRITE_ENDPOINT=http://127.0.0.1:65535/v1 REACT_APP_APPWRITE_PROJECT_ID=test-project REACT_APP_APPWRITE_DATABASE_ID=aidconnect_db react-scripts build",
+    "build:test:real": "react-scripts build",
+    "serve:build": "serve -s build -l 3000",
+    "start:test": "cross-env BROWSER=none REACT_APP_APPWRITE_ENDPOINT=http://127.0.0.1:65535/v1 REACT_APP_APPWRITE_PROJECT_ID=test-project REACT_APP_APPWRITE_DATABASE_ID=aidconnect_db react-scripts start",
+    "start:test:real": "cross-env BROWSER=none react-scripts start",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -28,6 +36,12 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "cross-env": "^7.0.3",
+    "serve": "^14.2.4",
+    "yaml": "^2.8.2"
   },
   "browserslist": {
     "production": [
